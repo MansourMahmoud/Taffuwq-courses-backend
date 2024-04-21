@@ -49,30 +49,27 @@ const ownerRegistration = asyncWrapper(async (req, res, next) => {
   }
 
   // create cv file on firebase
-  let ownerAvatar = null;
+  let avatar = null;
 
   if (file) {
     const ex = file.mimetype.split("/").pop();
     let exName = file.originalname.split(`.${ex}`)[0];
 
-    const ownerAvatarRef = ref(
-      storage,
-      `owner-avatar/${exName + v4() + "." + ex}`
-    );
+    const avatarRef = ref(storage, `owner-avatar/${exName + v4() + "." + ex}`);
 
     const metadata = {
       contentType: file.mimetype,
     };
 
     const snapshot = await uploadBytesResumable(
-      ownerAvatarRef,
+      avatarRef,
       file.buffer,
       metadata
     );
 
     const downloadURL = await getDownloadURL(snapshot.ref);
 
-    ownerAvatar = downloadURL;
+    avatar = downloadURL;
   }
 
   const code = randomDigits(6);
@@ -82,8 +79,8 @@ const ownerRegistration = asyncWrapper(async (req, res, next) => {
     password,
     fullName,
     idNum,
-    ownerAvatar: ownerAvatar
-      ? ownerAvatar
+    avatar: avatar
+      ? avatar
       : gender === "female" || gender === "Female"
       ? "https://firebasestorage.googleapis.com/v0/b/taffuwq-courses.appspot.com/o/female-avatar.png?alt=media&token=057c11f0-ed51-478d-b761-e80da296160f"
       : (gender === "male" || gender === "Male") &&

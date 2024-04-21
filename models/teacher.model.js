@@ -62,7 +62,7 @@ const teacherSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
-    teacherAvatar: {
+    avatar: {
       type: String,
       default: "",
     },
@@ -99,7 +99,6 @@ const teacherSchema = mongoose.Schema(
     timestamps: true,
   }
 );
-
 teacherSchema.index({ fullName: 1, dateOfBirth: 1 });
 
 const teacher = mongoose.model("Teacher", teacherSchema);

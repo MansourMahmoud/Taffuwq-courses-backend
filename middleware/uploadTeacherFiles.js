@@ -12,7 +12,7 @@ const fileFilter = (req, file, cb) => {
     } else {
       cb(new Error("CV file must be a PDF")); // الملف غير صالح
     }
-  } else if (file.fieldname === "teacherAvatar") {
+  } else if (file.fieldname === "avatar") {
     // التحقق من نوع الملف (Image)
     const mimeType = file.mimetype.split("/")[0];
     if (mimeType === "image") {

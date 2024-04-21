@@ -23,6 +23,10 @@ const ownerSchema = mongoose.Schema(
       trim: true,
       lowercase: true,
     },
+    phone: {
+      type: String,
+      trim: true,
+    },
     fullName: {
       type: String,
       required: true,
@@ -60,7 +64,10 @@ const ownerSchema = mongoose.Schema(
       required: true,
       enum: [male, female, Male, Female],
     },
-    ownerAvatar: {
+    dateOfBirth: {
+      type: String,
+    },
+    avatar: {
       type: String,
       default: "",
     },
@@ -105,7 +112,7 @@ ownerSchema.pre("save", async function (next) {
 ownerSchema.methods.generateAuthToken = async function () {
   const owner = this;
   const token = jwt.sign(
-    { id: owner._id.toString(), email: owner.email },
+    { id: owner._id.toString(), email: owner.email, role: owner.role },
     process.env.JWT_SECRET_KEY
   );
   owner.token = token;

@@ -67,4 +67,24 @@ const setPassword = asyncWrapper(async (req, res, next) => {
   });
 });
 
-module.exports = { changeTeacherStatus, setPassword };
+const getSingleTeacher = asyncWrapper(async (req, res, next) => {
+  const { teacherId } = req.params;
+
+  const teacher = await Teacher.findById(
+    { _id: teacherId },
+    { __v: false, password: false, token: false }
+  );
+
+  if (!teacher) {
+    const err = appError.create("teacher not found", 400, FAIL);
+    return next(err);
+  }
+
+  return res.status(200).json({
+    status: SUCCESS,
+    message: "fetch is successfully",
+    data: { teacher },
+  });
+});
+
+module.exports = { changeTeacherStatus, setPassword, getSingleTeacher };

@@ -100,14 +100,14 @@ const teacherRegistration = asyncWrapper(async (req, res, next) => {
     cv = downloadURL;
   }
 
-  let teacherAvatar = null;
+  let avatar = null;
 
-  if (files.teacherAvatar) {
-    const file = files.teacherAvatar[0];
+  if (files.avatar) {
+    const file = files.avatar[0];
     const ex = file.mimetype.split("/").pop();
     let exName = file.originalname.split(`.${ex}`)[0];
 
-    const teacherAvatarRef = ref(
+    const avatarRef = ref(
       storage,
       `teacher-avatar/${exName + v4() + "." + ex}`
     );
@@ -117,17 +117,17 @@ const teacherRegistration = asyncWrapper(async (req, res, next) => {
     };
 
     const snapshot = await uploadBytesResumable(
-      teacherAvatarRef,
+      avatarRef,
       file.buffer,
       metadata
     );
 
     const downloadURL = await getDownloadURL(snapshot.ref);
 
-    teacherAvatar = downloadURL;
+    avatar = downloadURL;
   }
 
-  if (!files.cv[0] || !files.teacherAvatar[0]) {
+  if (!files.cv[0] || !files.avatar[0]) {
     const err = appError.create("files is required", 400, FAIL);
     next(err);
   }
@@ -141,8 +141,8 @@ const teacherRegistration = asyncWrapper(async (req, res, next) => {
     branch,
     dateOfBirth,
     cv,
-    teacherAvatar: teacherAvatar
-      ? teacherAvatar
+    avatar: avatar
+      ? avatar
       : gender === "female" || gender === "Female"
       ? "https://firebasestorage.googleapis.com/v0/b/taffuwq-courses.appspot.com/o/female-avatar.png?alt=media&token=057c11f0-ed51-478d-b761-e80da296160f"
       : (gender === "male" || gender === "Male") &&
@@ -178,7 +178,6 @@ const teacherRegistration = asyncWrapper(async (req, res, next) => {
 
 const teacherLogin = asyncWrapper(async (req, res, next) => {
   const { idNum, password } = req.body;
-  console.log({ idNum, password });
 
   if (!idNum) {
     const err = appError.create("idNum is required", 400, FAIL);
@@ -189,6 +188,7 @@ const teacherLogin = asyncWrapper(async (req, res, next) => {
   }
 
   const teacher = await Teacher.findOne({ idNum });
+  console.log(teacher);
 
   if (!teacher) {
     const err = appError.create("idNum or password is invalid", 400, FAIL);

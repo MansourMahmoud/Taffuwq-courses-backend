@@ -6,14 +6,13 @@ require("./DB/DBConnect");
 const app = express();
 const port = process.env.PORT;
 
-// app.use(
-//   cors({
-//     credentials: true,
-//     origin: process.env.FRONTEND_URL ?? "http://localhost:3000",
-//     optionsSuccessStatus: 200,
-//   })
-// );
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+    origin: process.env.BASE_URL_FRONTEND ?? "http://localhost:3000",
+    optionsSuccessStatus: 200,
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

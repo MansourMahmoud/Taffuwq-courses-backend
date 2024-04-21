@@ -9,14 +9,13 @@ const port = process.env.PORT;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cors());
-// app.use(
-//   cors({
-//     credentials: true,
-//     origin: process.env.FRONTEND_URL ?? "http://localhost:3000",
-//     optionsSuccessStatus: 200,
-//   })
-// );
+app.use(
+  cors({
+    credentials: true,
+    origin: process.env.FRONTEND_URL ?? "http://localhost:3000",
+    optionsSuccessStatus: 200,
+  })
+);
 
 // import Router
 const teachersRouter = require("./routes/teacher.route");

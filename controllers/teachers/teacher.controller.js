@@ -67,6 +67,19 @@ const setPassword = asyncWrapper(async (req, res, next) => {
   });
 });
 
+const getAllTeachers = asyncWrapper(async (req, res, next) => {
+  const teachers = await Teacher.find(
+    {},
+    { __v: false, password: false, token: false }
+  );
+
+  return res.status(200).json({
+    status: SUCCESS,
+    message: "fetch is successfully",
+    data: { teachers },
+  });
+});
+
 const getSingleTeacher = asyncWrapper(async (req, res, next) => {
   const { teacherId } = req.params;
 
@@ -87,4 +100,9 @@ const getSingleTeacher = asyncWrapper(async (req, res, next) => {
   });
 });
 
-module.exports = { changeTeacherStatus, setPassword, getSingleTeacher };
+module.exports = {
+  changeTeacherStatus,
+  setPassword,
+  getSingleTeacher,
+  getAllTeachers,
+};

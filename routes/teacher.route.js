@@ -11,9 +11,11 @@ const {
   changeTeacherStatus,
   setPassword,
   getSingleTeacher,
+  getAllTeachers,
 } = require("../controllers/teachers/teacher.controller");
 
 const TeacherAuthentication = require("../middleware/TeacherAuthentication");
+
 router.route("/register").post(
   uploadTeacherCV.fields([
     { name: "cv", maxCount: 1 },
@@ -22,6 +24,7 @@ router.route("/register").post(
   teacherRegistration
 );
 
+router.route("/").get(getAllTeachers);
 router.route("/change-status").post(changeTeacherStatus);
 router.route("/set-password").post(setPassword);
 router.route("/login").post(teacherLogin);

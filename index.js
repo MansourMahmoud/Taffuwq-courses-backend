@@ -20,9 +20,13 @@ app.use(express.urlencoded({ extended: true }));
 // import Router
 const teachersRouter = require("./routes/teacher.route");
 const ownersRouter = require("./routes/owner.route");
+const adsRouter = require("./routes/ad.route");
+const adminNotificationsRouter = require("./routes/adminNotification.route");
 
 // use Router
 app.use("/api/v1/teachers", teachersRouter);
+app.use("/api/v1/owners/ads", adsRouter);
+app.use("/api/v1/owners/notifications", adminNotificationsRouter);
 app.use("/api/v1/owners", ownersRouter);
 
 // global middleware for not found router

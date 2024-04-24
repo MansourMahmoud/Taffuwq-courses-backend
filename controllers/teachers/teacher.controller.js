@@ -33,6 +33,8 @@ const changeTeacherStatus = asyncWrapper(async (req, res, next) => {
   } else if (teacherStatus === "refused") {
     const text = handleResMail(teacherStatus);
     const emailRes = await sendMail(email, text);
+    catchTeacher.status = "refused";
+    catchTeacher.save();
     return res.status(200).json({
       status: SUCCESS,
       message: emailRes,
@@ -68,13 +70,16 @@ const setPassword = asyncWrapper(async (req, res, next) => {
 });
 
 const getAllTeachers = asyncWrapper(async (req, res, next) => {
-  const teachers = await Teacher.find(
-    {},
-    { __v: false, password: false, token: false }
-  );
+  const options = {
+    select: { __v: false, password: false, token: false },
+    page: parseInt(req.query.page) || 1, // الصفحة الحالية (الافتراضي الصفحة 1)
+    limit: parseInt(req.query.limit) || 5, // عدد العناصر في كل صفحة (الافتراضي 5)
+  };
+
+  const teachers = await Teacher.paginate({}, options);
 
   return res.status(200).json({
-    status: SUCCESS,
+    status: "SUCCESS",
     message: "fetch is successfully",
     data: { teachers },
   });

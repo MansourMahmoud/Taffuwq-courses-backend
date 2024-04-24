@@ -1,5 +1,7 @@
 const asyncWrapper = require("../../../middleware/asyncWrapper");
 const Teacher = require("../../../models/teacher.model");
+const Owner = require("../../../models/owner.model");
+const AdminNotification = require("../../../models/adminNotification.model");
 const appError = require("../../../utils/appError");
 const bcryptjs = require("bcryptjs");
 const { SUCCESS, FAIL } = require("../../../utils/httpStatusText");
@@ -20,7 +22,7 @@ const teacherRegistration = asyncWrapper(async (req, res, next) => {
   const { email, phone, fullName, idNum, course, branch, dateOfBirth, gender } =
     req.body;
   const files = req?.files;
-  console.log(files);
+
   if (!email) {
     const err = appError.create("email is required", 400, FAIL);
     next(err);
@@ -169,6 +171,18 @@ const teacherRegistration = asyncWrapper(async (req, res, next) => {
   delete teacherObject.verificationCode;
   delete teacherObject.__v;
 
+  const owners = await Owner.find();
+
+  const result = owners.map(async (owner) => {
+    const newNotificationForAdmin = new AdminNotification({
+      ownerId: "",
+      content: ` طلب تسجيل جديد من ${newTeacher.fullName} كمعلم `,
+    });
+
+    newNotificationForAdmin.ownerId = owner._id;
+    await newNotificationForAdmin.save();
+  });
+
   return res.status(201).json({
     status: SUCCESS,
     message: "Teacher has been registered and is pending approval now.",
@@ -188,7 +202,6 @@ const teacherLogin = asyncWrapper(async (req, res, next) => {
   }
 
   const teacher = await Teacher.findOne({ idNum });
-  console.log(teacher);
 
   if (!teacher) {
     const err = appError.create("idNum or password is invalid", 400, FAIL);

@@ -3,6 +3,7 @@ const validator = require("validator");
 const { pending, accepted, refused } = require("../utils/statusEnum‎");
 const { TEACHER } = require("../utils/userRols");
 const { male, female, Male, Female } = require("../utils/genderEnum");
+const mongoosePaginate = require("mongoose-paginate-v2");
 
 const teacherSchema = mongoose.Schema(
   {
@@ -100,6 +101,7 @@ const teacherSchema = mongoose.Schema(
   }
 );
 teacherSchema.index({ fullName: 1, dateOfBirth: 1 });
+teacherSchema.plugin(mongoosePaginate);
 
 const teacher = mongoose.model("Teacher", teacherSchema);
 

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mongoosePaginate = require("mongoose-paginate-v2");
 
 const adSchema = mongoose.Schema(
   {
@@ -12,12 +13,22 @@ const adSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
-    from: {
+    timeFrom: {
       type: String,
       required: true,
       trim: true,
     },
-    to: {
+    timeTo: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    dayFrom: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    dayTo: {
       type: String,
       required: true,
       trim: true,
@@ -29,6 +40,7 @@ const adSchema = mongoose.Schema(
 );
 
 adSchema.index({ course: 1 });
+adSchema.plugin(mongoosePaginate);
 
 const ad = mongoose.model("Ad", adSchema);
 

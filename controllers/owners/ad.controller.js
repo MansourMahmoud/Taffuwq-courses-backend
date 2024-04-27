@@ -4,7 +4,13 @@ const appError = require("../../utils/appError");
 const { SUCCESS, FAIL } = require("../../utils/httpStatusText");
 
 const getAllAds = asyncWrapper(async (req, res, next) => {
-  const ads = await Ad.find({}, { __v: false });
+  const options = {
+    select: { __v: false, password: false, token: false },
+    page: parseInt(req.query.page) || 1, // الصفحة الحالية (الافتراضي الصفحة 1)
+    limit: parseInt(req.query.limit) || 5, // عدد العناصر في كل صفحة (الافتراضي 5)
+  };
+
+  const ads = await Ad.paginate({}, options);
 
   return res.status(200).json({
     status: SUCCESS,
@@ -31,7 +37,7 @@ const getSingleAd = asyncWrapper(async (req, res, next) => {
 });
 
 const addAd = asyncWrapper(async (req, res, next) => {
-  const { course, branch, from, to } = req.body;
+  const { course, branch, timeFrom, timeTo, dayFrom, dayTo } = req.body;
   console.log(req.body);
   if (!course) {
     const err = appError.create("course is required", 400, FAIL);
@@ -39,19 +45,27 @@ const addAd = asyncWrapper(async (req, res, next) => {
   } else if (!branch) {
     const err = appError.create("branch is required", 400, FAIL);
     return next(err);
-  } else if (!from) {
-    const err = appError.create("from is required", 400, FAIL);
+  } else if (!timeFrom) {
+    const err = appError.create("timeFrom is required", 400, FAIL);
     return next(err);
-  } else if (!to) {
-    const err = appError.create("to is required", 400, FAIL);
+  } else if (!timeTo) {
+    const err = appError.create("timeTo is required", 400, FAIL);
+    return next(err);
+  } else if (!dayFrom) {
+    const err = appError.create("dayFrom is required", 400, FAIL);
+    return next(err);
+  } else if (!dayTo) {
+    const err = appError.create("dayTo is required", 400, FAIL);
     return next(err);
   }
 
   const ad = new Ad({
     course,
     branch,
-    from,
-    to,
+    timeFrom,
+    timeTo,
+    dayFrom,
+    dayTo,
   });
 
   await ad.save();

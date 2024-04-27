@@ -21,9 +21,11 @@ app.use(express.urlencoded({ extended: true }));
 const teachersRouter = require("./routes/teacher.route");
 const ownersRouter = require("./routes/owner.route");
 const adsRouter = require("./routes/ad.route");
+const teachersLecturesRouter = require("./routes/teacherLecture.route");
 const adminNotificationsRouter = require("./routes/adminNotification.route");
 
 // use Router
+app.use("/api/v1/teachers/lectures", teachersLecturesRouter);
 app.use("/api/v1/teachers", teachersRouter);
 app.use("/api/v1/owners/ads", adsRouter);
 app.use("/api/v1/owners/notifications", adminNotificationsRouter);

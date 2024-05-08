@@ -6,30 +6,35 @@ require("./DB/DBConnect");
 const app = express();
 const port = process.env.PORT;
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(
   cors({
     credentials: true,
-    origin: process.env.BASE_URL_FRONTEND ?? "http://localhost:3000",
+    origin: process.env.BASE_URL_FRONTEND || "http://localhost:3000",
     optionsSuccessStatus: 200,
   })
 );
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // import Router
 const teachersRouter = require("./routes/teacher.route");
 const ownersRouter = require("./routes/owner.route");
 const adsRouter = require("./routes/ad.route");
 const teachersLecturesRouter = require("./routes/teacherLecture.route");
+const teachersExamsRouter = require("./routes/exam.route");
 const adminNotificationsRouter = require("./routes/adminNotification.route");
+const studentsRouter = require("./routes/student.route");
 
 // use Router
 app.use("/api/v1/teachers/lectures", teachersLecturesRouter);
+app.use("/api/v1/teachers/exams", teachersExamsRouter);
 app.use("/api/v1/teachers", teachersRouter);
 app.use("/api/v1/owners/ads", adsRouter);
 app.use("/api/v1/owners/notifications", adminNotificationsRouter);
 app.use("/api/v1/owners", ownersRouter);
+
+app.use("/api/v1/students", studentsRouter);
 
 // global middleware for not found router
 app.all("*", (req, res) => {

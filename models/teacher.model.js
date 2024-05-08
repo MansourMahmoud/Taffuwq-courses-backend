@@ -63,6 +63,13 @@ const teacherSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    studentsIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Student",
+        required: true,
+      },
+    ],
     avatar: {
       type: String,
       default: "",

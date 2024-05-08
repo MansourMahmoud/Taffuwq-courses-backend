@@ -13,6 +13,16 @@ const adSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    eduQualification: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    priceOfCourse: {
+      type: Number,
+      required: true,
+      trim: true,
+    },
     timeFrom: {
       type: String,
       required: true,

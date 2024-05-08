@@ -7,6 +7,8 @@ const sendMail = require("../../emails/sendMail");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { accepted } = require("../../utils/statusEnum‎");
+const Owner = require("../../models/owner.model");
+const AdminNotification = require("../../models/adminNotification.model");
 
 const changeTeacherStatus = asyncWrapper(async (req, res, next) => {
   const { email, teacherStatus } = req.body;
@@ -62,6 +64,18 @@ const setPassword = asyncWrapper(async (req, res, next) => {
   teacher.status = accepted;
 
   await teacher.save();
+
+  const owners = await Owner.find();
+
+  const result = owners.map(async (owner) => {
+    const newNotificationForAdmin = new AdminNotification({
+      ownerId: "",
+      content: ` قام المعلم ${teacher.fullName} بضبط كلمة مروره بنجاح `,
+    });
+
+    newNotificationForAdmin.ownerId = owner._id;
+    await newNotificationForAdmin.save();
+  });
 
   return res.status(200).json({
     status: SUCCESS,

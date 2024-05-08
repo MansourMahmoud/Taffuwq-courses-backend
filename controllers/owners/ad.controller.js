@@ -5,7 +5,7 @@ const { SUCCESS, FAIL } = require("../../utils/httpStatusText");
 
 const getAllAds = asyncWrapper(async (req, res, next) => {
   const options = {
-    select: { __v: false, password: false, token: false },
+    select: { __v: false },
     page: parseInt(req.query.page) || 1, // الصفحة الحالية (الافتراضي الصفحة 1)
     limit: parseInt(req.query.limit) || 5, // عدد العناصر في كل صفحة (الافتراضي 5)
   };
@@ -37,13 +37,28 @@ const getSingleAd = asyncWrapper(async (req, res, next) => {
 });
 
 const addAd = asyncWrapper(async (req, res, next) => {
-  const { course, branch, timeFrom, timeTo, dayFrom, dayTo } = req.body;
+  const {
+    course,
+    branch,
+    timeFrom,
+    timeTo,
+    dayFrom,
+    dayTo,
+    eduQualification,
+    priceOfCourse,
+  } = req.body;
   console.log(req.body);
   if (!course) {
     const err = appError.create("course is required", 400, FAIL);
     return next(err);
   } else if (!branch) {
     const err = appError.create("branch is required", 400, FAIL);
+    return next(err);
+  } else if (!eduQualification) {
+    const err = appError.create("eduQualification is required", 400, FAIL);
+    return next(err);
+  } else if (!priceOfCourse) {
+    const err = appError.create("priceOfCourse is required", 400, FAIL);
     return next(err);
   } else if (!timeFrom) {
     const err = appError.create("timeFrom is required", 400, FAIL);
@@ -62,6 +77,8 @@ const addAd = asyncWrapper(async (req, res, next) => {
   const ad = new Ad({
     course,
     branch,
+    eduQualification,
+    priceOfCourse,
     timeFrom,
     timeTo,
     dayFrom,

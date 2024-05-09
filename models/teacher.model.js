@@ -53,6 +53,7 @@ const teacherSchema = mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      enum: ["أدبي", "علمي", "تجاري"],
     },
     dateOfBirth: {
       type: String,

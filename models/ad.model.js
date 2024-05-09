@@ -12,16 +12,36 @@ const adSchema = mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      enum: ["أدبي", "علمي", "تجاري"],
+    },
+    description: {
+      type: String,
+      required: true,
+      trim: true,
     },
     eduQualification: {
       type: String,
       required: true,
       trim: true,
     },
-    priceOfCourse: {
-      type: Number,
+    courseImg: {
+      type: String,
       required: true,
       trim: true,
+    },
+    priceOfCourse: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    discount: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    showDiscount: {
+      type: Boolean,
+      default: true,
     },
     timeFrom: {
       type: String,
@@ -49,7 +69,6 @@ const adSchema = mongoose.Schema(
   }
 );
 
-adSchema.index({ course: 1 });
 adSchema.plugin(mongoosePaginate);
 
 const ad = mongoose.model("Ad", adSchema);

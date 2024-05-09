@@ -36,6 +36,7 @@ const studentSchema = mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      enum: ["أدبي", "علمي", "تجاري"],
     },
     nameOfSchool: {
       type: String,

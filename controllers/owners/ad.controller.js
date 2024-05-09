@@ -2,6 +2,13 @@ const asyncWrapper = require("../../middleware/asyncWrapper");
 const Ad = require("../../models/ad.model");
 const appError = require("../../utils/appError");
 const { SUCCESS, FAIL } = require("../../utils/httpStatusText");
+const storage = require("../../helpers/firebase");
+const {
+  ref,
+  getDownloadURL,
+  uploadBytesResumable,
+} = require("firebase/storage");
+const { v4 } = require("uuid");
 
 const getAllAds = asyncWrapper(async (req, res, next) => {
   const options = {
@@ -46,8 +53,12 @@ const addAd = asyncWrapper(async (req, res, next) => {
     dayTo,
     eduQualification,
     priceOfCourse,
+    discount,
+    description,
+    showDiscount,
   } = req.body;
-  console.log(req.body);
+  const file = req.file;
+
   if (!course) {
     const err = appError.create("course is required", 400, FAIL);
     return next(err);
@@ -59,6 +70,12 @@ const addAd = asyncWrapper(async (req, res, next) => {
     return next(err);
   } else if (!priceOfCourse) {
     const err = appError.create("priceOfCourse is required", 400, FAIL);
+    return next(err);
+  } else if (!discount) {
+    const err = appError.create("discount is required", 400, FAIL);
+    return next(err);
+  } else if (!description) {
+    const err = appError.create("description is required", 400, FAIL);
     return next(err);
   } else if (!timeFrom) {
     const err = appError.create("timeFrom is required", 400, FAIL);
@@ -74,11 +91,41 @@ const addAd = asyncWrapper(async (req, res, next) => {
     return next(err);
   }
 
+  let courseImg = null;
+
+  if (file) {
+    const ex = file.mimetype.split("/").pop();
+    let exName = file.originalname.split(`.${ex}`)[0];
+
+    const courseImgRef = ref(
+      storage,
+      `course-images/${exName + v4() + "." + ex}`
+    );
+
+    const metadata = {
+      contentType: file.mimetype,
+    };
+
+    const snapshot = await uploadBytesResumable(
+      courseImgRef,
+      file.buffer,
+      metadata
+    );
+
+    const downloadURL = await getDownloadURL(snapshot.ref);
+
+    courseImg = downloadURL;
+  }
+
   const ad = new Ad({
+    showDiscount,
+    courseImg,
     course,
     branch,
     eduQualification,
     priceOfCourse,
+    discount,
+    description,
     timeFrom,
     timeTo,
     dayFrom,

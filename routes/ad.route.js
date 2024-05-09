@@ -7,8 +7,9 @@ const {
   updateAd,
 } = require("../controllers/owners/ad.controller");
 const router = express.Router();
+const upload = require("../middleware/uploadImage");
 
-router.route("/").get(getAllAds).post(addAd);
+router.route("/").get(getAllAds).post(upload.single("courseImg"), addAd);
 
 router.route("/:adId").get(getSingleAd).delete(deleteAd).patch(updateAd);
 

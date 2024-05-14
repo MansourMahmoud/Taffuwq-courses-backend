@@ -112,10 +112,10 @@ const deleteCourseInCart = asyncWrapper(async (req, res, next) => {
 
   // if id ===  user,  then reset cart
 
-  let allCoursesInCart = await Cart.find({ user_id: id });
+  let allCoursesInCart = await Cart.find({ studentId: id });
 
   if (allCoursesInCart?.length > 0) {
-    await Cart.deleteMany({ user_id: id });
+    await Cart.deleteMany({ studentId: id });
 
     return res.status(200).json({
       status: SUCCESS,

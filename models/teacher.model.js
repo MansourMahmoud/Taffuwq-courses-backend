@@ -89,6 +89,10 @@ const teacherSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    totalSubscriptionPrices: {
+      type: String,
+      required: true,
+    },
     role: {
       type: String, // ['TEACHER']
       enum: [TEACHER],

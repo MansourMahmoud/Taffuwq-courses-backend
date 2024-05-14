@@ -16,6 +16,9 @@ const {
   deleteCourseInCart,
   getAllCoursesInCart,
 } = require("../controllers/students/coursesCart");
+const {
+  getAllCoursesToJSON,
+} = require("../controllers/courses/getAllCourses.controller");
 
 router.route("/register").post(upload.single("avatar"), studentRegistration);
 router.route("/verify").post(verifyStudent);
@@ -27,6 +30,8 @@ router.route("/cart").post(addCourseInCart);
 router.route("/cart/:id").delete(deleteCourseInCart);
 router.route("/cart/:studentId").get(getAllCoursesInCart);
 // end
+// handle courses
+router.route("/courses/:studentId").get(getAllCoursesToJSON);
 
 router.route("/:studentId").get(getSingleStudent);
 

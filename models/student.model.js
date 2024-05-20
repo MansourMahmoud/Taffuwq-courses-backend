@@ -92,6 +92,40 @@ const studentSchema = mongoose.Schema(
       enum: statusEnum,
       default: statusEnum.INACTIVE,
     },
+    informationsOfExams: [
+      {
+        examId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Exam",
+          required: true,
+        },
+        totalScores: {
+          type: Number,
+          required: true,
+        },
+        answers: {
+          type: Object,
+          required: true,
+        },
+        attended: {
+          type: Boolean,
+          required: true,
+          default: false,
+        },
+        attendanceTime: {
+          type: Date,
+          required: function () {
+            return this.attended;
+          }, // required if attended is true
+        },
+        duration: {
+          type: Number, // مدة الامتحان بالدقائق
+          required: function () {
+            return this.attended;
+          }, // required if attended is true
+        },
+      },
+    ],
     verificationCode: {
       type: String,
     },

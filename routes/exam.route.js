@@ -9,10 +9,12 @@ const {
 const router = express.Router();
 const multer = require("multer");
 const upload = multer();
-router.route("/").get(getAllExams).post(upload.any(), addExam);
+router.route("/").post(upload.any(), addExam);
 
+router.route("/:teacherId").get(getAllExams);
 router
   .route("/:examId")
+
   .get(getSingleExam)
   .delete(deleteExam)
   .patch(updateExam);

@@ -11,13 +11,15 @@ const {
 const { v4 } = require("uuid");
 
 const getAllExams = asyncWrapper(async (req, res, next) => {
+  const { teacherId } = req.params;
   const options = {
-    select: { __v: false },
+    select: "-__v", // لإخفاء الحقل __v
     page: parseInt(req.query.page) || 1, // الصفحة الحالية (الافتراضي الصفحة 1)
-    limit: parseInt(req.query.limit) || 5, // عدد العناصر في كل صفحة (الافتراضي 5)
+    limit: parseInt(req.query.limit) || 6, // عدد العناصر في كل صفحة (الافتراضي 5)
+    sort: { startTime: 1 }, // ترتيب حسب startTime تصاعديًا
   };
 
-  const exams = await Exam.paginate({}, options);
+  const exams = await Exam.paginate({ teacherId }, options);
 
   return res.status(200).json({
     status: SUCCESS,
@@ -175,24 +177,29 @@ const addExam = asyncWrapper(async (req, res, next) => {
 });
 
 const updateExam = asyncWrapper(async (req, res, next) => {
-  const { adId } = req.params;
+  const { examId } = req.params;
   const reqBody = req.body;
 
-  const ad = await Ad.findById({ _id: adId });
+  // العثور على الامتحان باستخدام معرف الامتحان
+  const exam = await Exam.findById(examId);
 
-  if (!ad) {
-    const err = appError.create("ad not found", 400, FAIL);
+  if (!exam) {
+    const err = appError.create("exam not found", 400, FAIL);
     return next(err);
   }
 
-  await Ad.updateOne({ _id: adId }, { $set: reqBody });
+  // تحديث الامتحان باستخدام findOneAndUpdate و upsert: true
+  const updatedExam = await Exam.findOneAndUpdate(
+    { _id: examId },
+    { $push: { studentExitStatus: reqBody.studentExitStatus } }, // استخدم $push مباشرةً
+    { upsert: true, new: true }
+  );
 
-  const updateAd = await Ad.findOne({ _id: adId });
-
+  // إرجاع البيانات المحدثة فقط بدون الحاجة إلى طلب إضافي لقاعدة البيانات
   return res.status(200).json({
     status: SUCCESS,
-    message: "ad has been updated successfully",
-    data: { ad: updateAd },
+    message: "exam has been updated successfully",
+    data: { exam: updatedExam },
   });
 });
 

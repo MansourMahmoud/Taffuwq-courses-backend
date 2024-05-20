@@ -10,6 +10,7 @@ const {
 } = require("../controllers/auth/students/studentAuth.controller");
 const {
   getSingleStudent,
+  updateStudent,
 } = require("../controllers/students/student.controller");
 const {
   addCourseInCart,
@@ -33,6 +34,6 @@ router.route("/cart/:studentId").get(getAllCoursesInCart);
 // handle courses
 router.route("/courses/:studentId").get(getAllCoursesToJSON);
 
-router.route("/:studentId").get(getSingleStudent);
+router.route("/:studentId").get(getSingleStudent).patch(updateStudent);
 
 module.exports = router;

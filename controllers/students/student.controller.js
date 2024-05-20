@@ -23,6 +23,25 @@ const getSingleStudent = asyncWrapper(async (req, res, next) => {
   });
 });
 
+const updateStudent = asyncWrapper(async (req, res, next) => {
+  const { studentId } = req.params;
+  const reqBody = req.body;
+
+  // تحديث الطالب باستخدام findOneAndUpdate و upsert: true
+  const updatedStudent = await Student.findOneAndUpdate(
+    { _id: studentId },
+    { $push: { informationsOfExams: reqBody.informationsOfExams } }, // استخدم $push مباشرةً
+    { upsert: true, new: true }
+  );
+
+  // إرجاع البيانات المحدثة فقط بدون الحاجة إلى طلب إضافي لقاعدة البيانات
+  return res.status(200).json({
+    status: SUCCESS,
+    message: "student has been updated successfully",
+    data: { student: updatedStudent },
+  });
+});
 module.exports = {
   getSingleStudent,
+  updateStudent,
 };

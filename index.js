@@ -24,6 +24,8 @@ const adsRouter = require("./routes/ad.route");
 const teachersLecturesRouter = require("./routes/teacherLecture.route");
 const teachersExamsRouter = require("./routes/exam.route");
 const adminNotificationsRouter = require("./routes/adminNotification.route");
+const teacherNotificationsRouter = require("./routes/teacherNotification.route");
+const studentNotificationsRouter = require("./routes/studentNotification.route");
 const studentsRouter = require("./routes/student.route");
 const paymentRouter = require("./routes/payment.route");
 const ordersRouter = require("./routes/order.route");
@@ -31,11 +33,14 @@ const ordersRouter = require("./routes/order.route");
 // use Router
 app.use("/api/v1/teachers/lectures", teachersLecturesRouter);
 app.use("/api/v1/teachers/exams", teachersExamsRouter);
+app.use("/api/v1/teachers/notifications", teacherNotificationsRouter);
 app.use("/api/v1/teachers", teachersRouter);
+
 app.use("/api/v1/owners/ads", adsRouter);
 app.use("/api/v1/owners/notifications", adminNotificationsRouter);
 app.use("/api/v1/owners", ownersRouter);
 
+app.use("/api/v1/students/notifications", studentNotificationsRouter);
 app.use("/api/v1/students", studentsRouter);
 app.use("/api/v1/payment", paymentRouter);
 //

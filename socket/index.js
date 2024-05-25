@@ -38,41 +38,51 @@ io.on("connection", async (socket) => {
   io.emit("onlineUser", Array.from(onlineUser));
 
   socket.on("message-part", async (studentId) => {
-    const studentDetails = await Student.findById({ _id: studentId }).select(
-      "-idNum"
-    );
-    const payload = {
-      _id: studentDetails?._id,
-      fullName: studentDetails?.fullName,
-      email: studentDetails?.email,
-      avatar: studentDetails?.avatar,
-      online: onlineUser.has(studentId),
-    };
+    try {
+      const studentDetails = await Student.findById({ _id: studentId }).select(
+        "-idNum"
+      );
+      const payload = {
+        _id: studentDetails?._id,
+        fullName: studentDetails?.fullName,
+        email: studentDetails?.email,
+        avatar: studentDetails?.avatar,
+        online: onlineUser.has(studentId),
+      };
 
-    socket.emit("message-user", payload);
+      socket.emit("message-user", payload);
 
-    // get previous message
+      // الحصول على الرسائل السابقة
+      const getConversationMessage = await Conversation.findOne({
+        $or: [
+          {
+            sender: student?._id,
+            receiver: studentId,
+          },
+          {
+            sender: studentId,
+            receiver: student?._id,
+          },
+        ],
+      });
 
-    const getConversationMessage = await Conversation.findOne({
-      $or: [
-        {
-          sender: student?._id,
-          receiver: studentId,
-        },
-        {
-          sender: studentId,
-          receiver: student?._id,
-        },
-      ],
-    });
+      if (!getConversationMessage) {
+        console.log("No conversation found");
+        socket.emit("message", []); // إرسال رسالة فارغة إذا لم توجد محادثة
+        return;
+      }
 
-    const messagesFind = await Message.find({
-      _id: { $in: getConversationMessage.messages },
-    }).sort({ createdAt: 1 });
+      const messagesFind = await Message.find({
+        _id: { $in: getConversationMessage.messages },
+      }).sort({ createdAt: 1 });
 
-    getConversationMessage.messages = messagesFind;
-
-    socket.emit("message", getConversationMessage?.messages || []);
+      getConversationMessage.messages = messagesFind;
+      console.log("getConversationMessage", getConversationMessage);
+      socket.emit("message", getConversationMessage.messages || []);
+    } catch (error) {
+      console.error("Error in message-part:", error);
+      socket.emit("error", "An error occurred while fetching messages");
+    }
   });
 
   //  new message

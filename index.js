@@ -3,7 +3,9 @@ const cors = require("cors");
 const { ERROR } = require("./utils/httpStatusText");
 require("dotenv").config();
 require("./DB/DBConnect");
-const app = express();
+const { app, server } = require("./socket/index");
+
+// const app = express();
 const port = process.env.PORT;
 
 app.use(express.json());
@@ -62,6 +64,6 @@ app.use((error, req, res, next) => {
   });
 });
 
-app.listen(port || 8000, () => {
+server.listen(port || 8000, () => {
   console.log("listen on port:", port);
 });

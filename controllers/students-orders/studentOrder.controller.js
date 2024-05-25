@@ -10,15 +10,28 @@ const TeacherNotification = require("../../models/teacherNotification.model");
 const StudentNotification = require("../../models/studentNotification.model");
 
 const addOrder = asyncWrapper(async (req, res, next) => {
-  const { courseId, course, studentId, courses, session_id, mode, total } =
-    req.body; // افترض هنا أن الطالب متاح في طلب
+  const {
+    courseId,
+    course,
+    studentId,
+    courses,
+    session_id,
+    mode,
+    total,
+    adId,
+  } = req.body; // افترض هنا أن الطالب متاح في طلب
 
   const isOrder = await OrderCourse.findOne({ orderId: session_id });
 
   if (!isOrder) {
     if (mode === "false" || mode === false) {
       const teacher = await Teacher.findById({ _id: courseId });
-
+      const student = await Student.findById({ _id: studentId });
+      const ad = await Ad.findById({ _id: adId });
+      const courseFind = {
+        ...teacher.toObject(),
+        ad: ad.toObject(),
+      };
       const isStudent = teacher.studentsIds.find((student) => {
         return student.toString() === studentId;
       });
@@ -29,16 +42,14 @@ const addOrder = asyncWrapper(async (req, res, next) => {
           +teacher.totalSubscriptionPrices + +total
         ).toString();
         await teacher.save();
-
+        console.log("courseFind:", courseFind);
         const orderCourse = new OrderCourse({
           studentId: studentId,
-          courses: [
-            {
-              studentId,
-              course: course,
-              courseId,
-            },
-          ],
+          courses: {
+            studentId,
+            course: courseFind,
+            courseId,
+          },
           mode: "one course",
           orderId: session_id,
           teacherId: courseId,

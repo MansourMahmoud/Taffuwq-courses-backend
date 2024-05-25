@@ -11,6 +11,7 @@ const {
 const {
   getSingleStudent,
   updateStudent,
+  getTeacherStudents,
 } = require("../controllers/students/student.controller");
 const {
   addCourseInCart,
@@ -20,11 +21,13 @@ const {
 const {
   getAllCoursesToJSON,
 } = require("../controllers/courses/getAllCourses.controller");
+const studentSearch = require("../controllers/students/studentSearch");
 
 router.route("/register").post(upload.single("avatar"), studentRegistration);
 router.route("/verify").post(verifyStudent);
 
 router.route("/login").post(studentLogin);
+router.route("/search").post(studentSearch);
 
 // cart routes
 router.route("/cart").post(addCourseInCart);
@@ -34,6 +37,7 @@ router.route("/cart/:studentId").get(getAllCoursesInCart);
 // handle courses
 router.route("/courses/:studentId").get(getAllCoursesToJSON);
 
+router.route("/").post(getTeacherStudents);
 router.route("/:studentId").get(getSingleStudent).patch(updateStudent);
 
 module.exports = router;

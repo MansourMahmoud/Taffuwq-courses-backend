@@ -19,7 +19,7 @@ const getAllTeachersLectures = asyncWrapper(async (req, res, next) => {
     page: parseInt(req.query.page) || 1, // الصفحة الحالية (الافتراضي الصفحة 1)
     limit: parseInt(req.query.limit) || 5, // عدد العناصر في كل صفحة (الافتراضي 5)
   };
-  console.log("yes");
+
   const teachersLectures = await TeacherLecture.paginate({}, options);
 
   return res.status(200).json({
@@ -32,20 +32,15 @@ const getAllTeachersLectures = asyncWrapper(async (req, res, next) => {
 const getSingleTeacherLecture = asyncWrapper(async (req, res, next) => {
   const { teacherLectureId } = req.params;
 
-  const teacherLecture = await TeacherLecture.findById(
-    { _id: teacherLectureId },
+  const teacherLectures = await TeacherLecture.find(
+    { teacherId: teacherLectureId },
     { __v: false }
   );
-
-  if (!teacherLecture) {
-    const err = appError.create("teacherLecture not found", 400, FAIL);
-    return next(err);
-  }
 
   return res.status(200).json({
     status: SUCCESS,
     message: "fetch is successfully",
-    data: { teacherLecture },
+    data: { teacherLectures },
   });
 });
 

@@ -8,7 +8,7 @@ const deleteOrUpdateAllStudentNotifications = asyncWrapper(
   async (req, res, next) => {
     const { studentId } = req.params;
     const { seen, deleteAll } = req.query;
-    console.log(studentId);
+
     const studentNotification = await Student.findOne({
       _id: studentId,
     });

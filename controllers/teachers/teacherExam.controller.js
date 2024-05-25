@@ -47,8 +47,6 @@ const getSingleExam = asyncWrapper(async (req, res, next) => {
 
 const addExam = asyncWrapper(async (req, res, next) => {
   const reqBody = req.body;
-  console.log("reqBody:", reqBody);
-  console.log("files:", req.files);
 
   // معالجة ملفات الاختيارات
   for (const [indexQuestion, question] of reqBody.questions.entries()) {

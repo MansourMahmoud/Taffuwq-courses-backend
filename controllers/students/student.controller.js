@@ -23,6 +23,20 @@ const getSingleStudent = asyncWrapper(async (req, res, next) => {
   });
 });
 
+const getTeacherStudents = asyncWrapper(async (req, res, next) => {
+  const { ids } = req.body;
+
+  const students = await Student.find({
+    _id: { $in: ids },
+  });
+
+  return res.status(200).json({
+    status: SUCCESS,
+    message: "fetch is successfully",
+    data: { students },
+  });
+});
+
 const updateStudent = asyncWrapper(async (req, res, next) => {
   const { studentId } = req.params;
   const reqBody = req.body;
@@ -44,4 +58,5 @@ const updateStudent = asyncWrapper(async (req, res, next) => {
 module.exports = {
   getSingleStudent,
   updateStudent,
+  getTeacherStudents,
 };

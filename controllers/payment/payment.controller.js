@@ -5,7 +5,7 @@ const Stripe = require("stripe");
 
 const createChechoutSession = asyncWrapper(async (req, res, next) => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-  const { courses, course, email, endPoint, mode } = req.body;
+  const { courses, course, email, endPoint, mode, adId } = req.body;
 
   let totalPrice = 0;
 
@@ -103,7 +103,7 @@ const createChechoutSession = asyncWrapper(async (req, res, next) => {
         endPoint || ""
       }/success?session_id={CHECKOUT_SESSION_ID}&mode=${false}&course=${
         course.courseId
-      }&total=${totalPrice.toString()}`,
+      }&total=${totalPrice.toString()}&adId=${adId}`,
       cancel_url: `${process.env.BASE_URL_FRONTEND}${endPoint || ""}`,
       metadata: {
         email,

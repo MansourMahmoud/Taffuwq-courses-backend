@@ -1,5 +1,8 @@
 const asyncWrapper = require("../../middleware/asyncWrapper");
 const { Exam, Question, Option } = require("../../models/exam.model");
+const Teacher = require("../../models/teacher.model");
+const Student = require("../../models/student.model");
+const StudentNotification = require("../../models/studentNotification.model");
 const appError = require("../../utils/appError");
 const { SUCCESS, FAIL } = require("../../utils/httpStatusText");
 const storage = require("../../helpers/firebase");
@@ -15,8 +18,8 @@ const getAllExams = asyncWrapper(async (req, res, next) => {
   const options = {
     select: "-__v", // لإخفاء الحقل __v
     page: parseInt(req.query.page) || 1, // الصفحة الحالية (الافتراضي الصفحة 1)
-    limit: parseInt(req.query.limit) || 6, // عدد العناصر في كل صفحة (الافتراضي 5)
-    sort: { startTime: 1 }, // ترتيب حسب startTime تصاعديًا
+    limit: parseInt(req.query.limit) || 5, // عدد العناصر في كل صفحة (الافتراضي 5)
+    sort: { updatedAt: -1 }, // ترتيب حسب updatedAt تنازليًا
   };
 
   const exams = await Exam.paginate({ teacherId }, options);
@@ -166,6 +169,18 @@ const addExam = asyncWrapper(async (req, res, next) => {
   exam.questions = questionsArr;
 
   await exam.save();
+
+  const teahcer = await Teacher.findById(reqBody.teacherId);
+
+  const studentsIds = teahcer.studentsIds;
+
+  const newNotificationForStudents = studentsIds?.map(async (id) => {
+    const pushNewNotificationForStudent = new StudentNotification({
+      studentId: id,
+      content: `المعلم ${teahcer.fullName} قد رفع امتحاناً من أجلك رجاء افحص التقويم!`,
+    });
+    await pushNewNotificationForStudent.save();
+  });
 
   return res.status(201).json({
     status: SUCCESS,

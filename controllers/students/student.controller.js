@@ -41,16 +41,27 @@ const updateStudent = asyncWrapper(async (req, res, next) => {
   const { studentId } = req.params;
   const reqBody = req.body;
 
-  // تحديث الطالب باستخدام findOneAndUpdate و upsert: true
-  const updatedStudent = await Student.findOneAndUpdate(
-    { _id: studentId },
-    { $push: { informationsOfExams: reqBody.informationsOfExams } }, // استخدم $push مباشرةً
-    { upsert: true, new: true }
-  );
+  let updatedStudent;
+  console.log("reqBody:", reqBody);
 
-  // إرجاع البيانات المحدثة فقط بدون الحاجة إلى طلب إضافي لقاعدة البيانات
+  if (reqBody.informationsOfExams) {
+    updatedStudent = await Student.findOneAndUpdate(
+      { _id: studentId },
+      { $push: { informationsOfExams: reqBody.informationsOfExams } },
+      { upsert: true, new: true }
+    );
+  } else {
+    updatedStudent = await Student.findOneAndUpdate(
+      { _id: studentId },
+      { $set: { ...reqBody } },
+      { new: true }
+    );
+  }
+
+  console.log("updatedStudent in student.controller:", updatedStudent);
+
   return res.status(200).json({
-    status: SUCCESS,
+    status: "SUCCESS",
     message: "student has been updated successfully",
     data: { student: updatedStudent },
   });

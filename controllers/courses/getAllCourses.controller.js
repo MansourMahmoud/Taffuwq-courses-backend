@@ -6,7 +6,7 @@ const appError = require("../../utils/appError");
 const { SUCCESS, FAIL } = require("../../utils/httpStatusText");
 
 const getAllCoursesToJSON = asyncWrapper(async (req, res, next) => {
-  const { studentId } = req.params; // افترض هنا أن الطالب متاح في طلب
+  const { studentId } = req.params;
 
   const student = await Student.findById({ _id: studentId });
 
@@ -33,4 +33,34 @@ const getAllCoursesToJSON = asyncWrapper(async (req, res, next) => {
     data: courses,
   });
 });
-module.exports = { getAllCoursesToJSON };
+
+const searchInCoursesToJSON = asyncWrapper(async (req, res, next) => {
+  const { studentId } = req.params;
+  const { fullName = "", course = "" } = req.query;
+
+  const student = await Student.findById(studentId);
+  const branch = student.branch;
+
+  const ad = await Ad.find({ branch });
+  const teacher = await Teacher.find({ branch });
+
+  const teachersWithAds = teacher.map((t) => {
+    const teacherAd = ad.find((a) => a.course === t.course);
+    return { ...t.toObject(), ad: teacherAd };
+  });
+  let courses = [];
+  if (fullName || course) {
+    const filteredCourses = teachersWithAds.filter(
+      (teacherWithAd) =>
+        teacherWithAd.fullName.toLowerCase().includes(fullName.toLowerCase()) &&
+        teacherWithAd.course.toLowerCase().includes(course.toLowerCase())
+    );
+    courses = filteredCourses;
+  }
+
+  res.status(200).json({
+    status: SUCCESS,
+    data: { courses },
+  });
+});
+module.exports = { getAllCoursesToJSON, searchInCoursesToJSON };

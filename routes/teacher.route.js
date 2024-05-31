@@ -12,6 +12,8 @@ const {
   setPassword,
   getSingleTeacher,
   getAllTeachers,
+  getAllTeachersWithoutPaginate,
+  searchInTeacher,
 } = require("../controllers/teachers/teacher.controller");
 
 const TeacherAuthentication = require("../middleware/TeacherAuthentication");
@@ -25,6 +27,10 @@ router.route("/register").post(
 );
 
 router.route("/").get(getAllTeachers);
+router
+  .route("/all-teachers-without-paginate")
+  .get(getAllTeachersWithoutPaginate);
+router.route("/search").get(searchInTeacher);
 router.route("/change-status").post(changeTeacherStatus);
 router.route("/set-password").post(setPassword);
 router.route("/login").post(teacherLogin);

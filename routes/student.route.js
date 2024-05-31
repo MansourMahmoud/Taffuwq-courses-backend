@@ -12,6 +12,9 @@ const {
   getSingleStudent,
   updateStudent,
   getTeacherStudents,
+  getAllStudents,
+  getAllStudentsWithPaginate,
+  searchInStudents,
 } = require("../controllers/students/student.controller");
 const {
   addCourseInCart,
@@ -39,7 +42,9 @@ router.route("/cart/:studentId").get(getAllCoursesInCart);
 router.route("/courses/search/:studentId").get(searchInCoursesToJSON);
 router.route("/courses/:studentId").get(getAllCoursesToJSON);
 
-router.route("/").post(getTeacherStudents);
+router.route("/all-student-with-paginate").get(getAllStudentsWithPaginate);
+router.route("/search").get(searchInStudents);
+router.route("/").get(getAllStudents).post(getTeacherStudents);
 router.route("/:studentId").get(getSingleStudent).patch(updateStudent);
 
 module.exports = router;

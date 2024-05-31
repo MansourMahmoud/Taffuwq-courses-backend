@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const { FAIL } = require("../utils/httpStatusText");
 const appError = require("../utils/appError");
 const statusEnum = require("../utils/status");
+const mongoosePaginate = require("mongoose-paginate-v2");
 
 const studentSchema = mongoose.Schema(
   {
@@ -180,6 +181,7 @@ studentSchema.methods.toJSON = function () {
 };
 
 studentSchema.index({ fullName: 1 });
+studentSchema.plugin(mongoosePaginate);
 
 const Student = mongoose.model("Student", studentSchema);
 

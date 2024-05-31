@@ -10,6 +10,102 @@ const { accepted } = require("../../utils/statusEnum‎");
 const Owner = require("../../models/owner.model");
 const AdminNotification = require("../../models/adminNotification.model");
 
+const getAllTeachersWithoutPaginate = asyncWrapper(async (req, res, next) => {
+  const teachers = await Teacher.find(
+    {},
+    { __v: false, password: false, token: false }
+  );
+
+  return res.status(200).json({
+    status: SUCCESS,
+    message: "fetch is successfully",
+    data: { teachers },
+  });
+});
+
+const searchInTeacher = asyncWrapper(async (req, res, next) => {
+  const {
+    fullName,
+    course,
+    branch,
+    gender,
+    idNum,
+    email,
+    minStudents,
+    maxStudents,
+    minRevenue,
+    maxRevenue,
+  } = req.query;
+
+  const match = {};
+
+  if (fullName) {
+    match.fullName = { $regex: fullName, $options: "i" };
+  }
+
+  if (course) {
+    match.course = { $regex: course, $options: "i" };
+  }
+
+  if (branch) {
+    match.branch = { $regex: branch, $options: "i" };
+  }
+
+  if (gender) {
+    match.gender = gender;
+  }
+
+  if (idNum) {
+    match.idNum = Number(idNum);
+  }
+
+  if (email) {
+    match.email = { $regex: email, $options: "i" };
+  }
+
+  // نبقي match.totalSubscriptionPrices هنا فارغًا لحين تحويل القيم في pipeline
+  const revenueMatch = {};
+
+  if (minRevenue) {
+    revenueMatch.$gte = Number(minRevenue);
+  }
+  if (maxRevenue) {
+    revenueMatch.$lte = Number(maxRevenue);
+  }
+
+  const pipeline = [
+    { $match: match },
+    {
+      $addFields: {
+        studentsCount: { $size: "$studentsIds" },
+        totalSubscriptionPrices: { $toDouble: "$totalSubscriptionPrices" }, // لتحويل الإيرادات إلى رقم مزدوج
+      },
+    },
+  ];
+
+  if (Object.keys(revenueMatch).length) {
+    pipeline.push({ $match: { totalSubscriptionPrices: revenueMatch } });
+  }
+
+  if (minStudents || maxStudents) {
+    const studentsMatch = {};
+    if (minStudents) {
+      studentsMatch.$gte = Number(minStudents);
+    }
+    if (maxStudents) {
+      studentsMatch.$lte = Number(maxStudents);
+    }
+    pipeline.push({ $match: { studentsCount: studentsMatch } });
+  }
+
+  const teachers = await Teacher.aggregate(pipeline);
+
+  res.status(200).json({
+    status: "SUCCESS",
+    data: { teachers },
+  });
+});
+
 const changeTeacherStatus = asyncWrapper(async (req, res, next) => {
   const { email, teacherStatus } = req.body;
 
@@ -124,4 +220,6 @@ module.exports = {
   setPassword,
   getSingleTeacher,
   getAllTeachers,
+  getAllTeachersWithoutPaginate,
+  searchInTeacher,
 };

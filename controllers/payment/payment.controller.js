@@ -79,7 +79,7 @@ const createChechoutSession = asyncWrapper(async (req, res, next) => {
       // إذا لم يكن هناك تخفيض، احتساب السعر كالمعتاد
       unit_amount = +course.course?.ad?.priceOfCourse;
     }
-    console.log(unit_amount);
+
     totalPrice += unit_amount;
 
     const extractingItems = {

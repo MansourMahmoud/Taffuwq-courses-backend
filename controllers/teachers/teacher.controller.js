@@ -12,7 +12,7 @@ const AdminNotification = require("../../models/adminNotification.model");
 
 const getAllTeachersWithoutPaginate = asyncWrapper(async (req, res, next) => {
   const teachers = await Teacher.find(
-    {},
+    { status: "accepted" },
     { __v: false, password: false, token: false }
   );
 
@@ -186,6 +186,21 @@ const getAllTeachers = asyncWrapper(async (req, res, next) => {
     limit: parseInt(req.query.limit) || 5, // عدد العناصر في كل صفحة (الافتراضي 5)
   };
 
+  const teachers = await Teacher.paginate({ status: "accepted" }, options);
+
+  return res.status(200).json({
+    status: "SUCCESS",
+    message: "fetch is successfully",
+    data: { teachers },
+  });
+});
+const getAllTeachersAcceptedOrNot = asyncWrapper(async (req, res, next) => {
+  const options = {
+    select: { __v: false, password: false, token: false },
+    page: parseInt(req.query.page) || 1, // الصفحة الحالية (الافتراضي الصفحة 1)
+    limit: parseInt(req.query.limit) || 5, // عدد العناصر في كل صفحة (الافتراضي 5)
+  };
+
   const teachers = await Teacher.paginate({}, options);
 
   return res.status(200).json({
@@ -222,4 +237,5 @@ module.exports = {
   getAllTeachers,
   getAllTeachersWithoutPaginate,
   searchInTeacher,
+  getAllTeachersAcceptedOrNot,
 };

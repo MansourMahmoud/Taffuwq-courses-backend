@@ -57,7 +57,7 @@ const getAllTeacherNotification = asyncWrapper(async (req, res, next) => {
       teacherId: teacherNotificationId,
     },
     { __v: false }
-  );
+  ).sort({ createdAt: -1 });
 
   return res.status(200).json({
     status: SUCCESS,

@@ -1,6 +1,8 @@
 const asyncWrapper = require("../../middleware/asyncWrapper");
 const TeacherLecture = require("../../models/teacherLecture.model");
 const Teacher = require("../../models/teacher.model");
+const Student = require("../../models/student.model");
+const StudentNotification = require("../../models/studentNotification.model");
 
 const appError = require("../../utils/appError");
 const { SUCCESS, FAIL } = require("../../utils/httpStatusText");
@@ -126,6 +128,16 @@ const addTeacherLecture = asyncWrapper(async (req, res, next) => {
   });
 
   await teacherLecture.save();
+
+  const studentsIds = teacher.studentsIds;
+
+  const newNotificationForStudents = studentsIds?.map(async (id) => {
+    const pushNewNotificationForStudent = new StudentNotification({
+      studentId: id,
+      content: `المعلم ${teacher.fullName} قد رفع محاضرة جديدة  بعنوان ${lectureTitle}`,
+    });
+    await pushNewNotificationForStudent.save();
+  });
 
   return res.status(201).json({
     status: SUCCESS,

@@ -8,6 +8,8 @@ const appError = require("../../utils/appError");
 const { SUCCESS, FAIL } = require("../../utils/httpStatusText");
 const TeacherNotification = require("../../models/teacherNotification.model");
 const StudentNotification = require("../../models/studentNotification.model");
+const AdminNotification = require("../../models/adminNotification.model");
+const Owner = require("../../models/owner.model");
 
 const addOrder = asyncWrapper(async (req, res, next) => {
   const {
@@ -36,13 +38,17 @@ const addOrder = asyncWrapper(async (req, res, next) => {
         return student.toString() === studentId;
       });
 
+      const totalPrice = Number(total);
+      const totalSubscriptionPricesForTeacher = Number(
+        teacher?.totalSubscriptionPrices
+      );
       if (!isStudent) {
         teacher.studentsIds = teacher.studentsIds.concat(studentId);
         teacher.totalSubscriptionPrices = (
-          +teacher.totalSubscriptionPrices + +total
+          totalSubscriptionPricesForTeacher + totalPrice
         ).toString();
         await teacher.save();
-        console.log("courseFind:", courseFind);
+
         const orderCourse = new OrderCourse({
           studentId: studentId,
           courses: {
@@ -74,6 +80,19 @@ const addOrder = asyncWrapper(async (req, res, next) => {
         });
 
         await newNotificationForStudent.save();
+
+        // send notification for owners
+        const owners = await Owner.find();
+
+        const result = owners.map(async (owner) => {
+          const newNotificationForAdmin = new AdminNotification({
+            ownerId: "",
+            content: ` الطالب ${student.fullName} قد اشترك في دورة المعلم ${teacher.fullName} `,
+          });
+
+          newNotificationForAdmin.ownerId = owner._id;
+          await newNotificationForAdmin.save();
+        });
 
         return res.status(201).json({
           status: SUCCESS,
@@ -126,9 +145,9 @@ const addOrder = asyncWrapper(async (req, res, next) => {
           teacher.studentsIds = teacher.studentsIds.concat(studentId);
 
           // تحديث السعر للمعلم بناءً على سعر الدورة
-          let coursePrice = course.course.ad.priceOfCourse;
+          let coursePrice = +course.course.ad.priceOfCourse;
           if (course.course.ad.showDiscount === true) {
-            coursePrice = course.course.ad.discount;
+            coursePrice = +course.course.ad.discount;
           }
           totalOfPrice += +coursePrice;
 
@@ -144,6 +163,19 @@ const addOrder = asyncWrapper(async (req, res, next) => {
         });
 
         await newNotificationForTeacher.save();
+
+        // send notification for owners
+        const owners = await Owner.find();
+
+        const result = owners.map(async (owner) => {
+          const newNotificationForAdmin = new AdminNotification({
+            ownerId: "",
+            content: ` الطالب ${student?.fullName} قد اشترك في دورة المعلم ${teacher?.fullName} `,
+          });
+
+          newNotificationForAdmin.ownerId = owner._id;
+          await newNotificationForAdmin.save();
+        });
       }
 
       // إنشاء الطلب بعد تحديث السعر لكل معلم

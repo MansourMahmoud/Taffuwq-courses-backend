@@ -54,7 +54,7 @@ const getAllAdminNotification = asyncWrapper(async (req, res, next) => {
       ownerId: adminNotificationId,
     },
     { __v: false }
-  );
+  ).sort({ createdAt: -1 });
 
   return res.status(200).json({
     status: SUCCESS,

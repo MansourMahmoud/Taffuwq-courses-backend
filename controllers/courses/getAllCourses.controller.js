@@ -15,7 +15,7 @@ const getAllCoursesToJSON = asyncWrapper(async (req, res, next) => {
 
   // البحث عن Ad و Teacher الذين لديهم branch يطابق branch من الطالب
   const ad = await Ad.find({ branch });
-  const teacher = await Teacher.find({ branch });
+  const teacher = await Teacher.find({ branch, status: "accepted" });
 
   // دمج الإعلانات مع المدرسين
   const teachersWithAds = teacher.map((t) => {
@@ -42,7 +42,7 @@ const searchInCoursesToJSON = asyncWrapper(async (req, res, next) => {
   const branch = student.branch;
 
   const ad = await Ad.find({ branch });
-  const teacher = await Teacher.find({ branch });
+  const teacher = await Teacher.find({ branch, status: "accepted" }); // فقط المعلمين المقبولين
 
   const teachersWithAds = teacher.map((t) => {
     const teacherAd = ad.find((a) => a.course === t.course);

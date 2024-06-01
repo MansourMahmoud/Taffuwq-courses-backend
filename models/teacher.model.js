@@ -91,7 +91,6 @@ const teacherSchema = mongoose.Schema(
     },
     totalSubscriptionPrices: {
       type: String,
-      required: true,
     },
     role: {
       type: String, // ['TEACHER']

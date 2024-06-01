@@ -203,4 +203,15 @@ const getAllOrdersForSingleStudent = asyncWrapper(async (req, res, next) => {
     },
   });
 });
-module.exports = { addOrder, getAllOrdersForSingleStudent };
+const getAllOrders = asyncWrapper(async (req, res, next) => {
+  const orders = await OrderCourse.find();
+
+  return res.status(200).json({
+    status: SUCCESS,
+    message: "fetch is successfully!",
+    data: {
+      orders,
+    },
+  });
+});
+module.exports = { addOrder, getAllOrdersForSingleStudent, getAllOrders };

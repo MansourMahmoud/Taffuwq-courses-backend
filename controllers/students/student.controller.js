@@ -99,14 +99,43 @@ const getSingleStudent = asyncWrapper(async (req, res, next) => {
 });
 
 const getTeacherStudents = asyncWrapper(async (req, res, next) => {
-  const { ids } = req.body;
+  const { ids, fullName, email, branch, nameOfSchool, age, idNum, gender } =
+    req.body;
 
-  const students = await Student.find({
-    _id: { $in: ids },
-  });
+  const match = { _id: { $in: ids } };
 
-  return res.status(200).json({
-    status: SUCCESS,
+  if (fullName) {
+    match.fullName = { $regex: fullName, $options: "i" };
+  }
+
+  if (email) {
+    match.email = { $regex: email, $options: "i" };
+  }
+
+  if (branch) {
+    match.branch = { $regex: branch, $options: "i" };
+  }
+
+  if (nameOfSchool) {
+    match.nameOfSchool = { $regex: nameOfSchool, $options: "i" };
+  }
+
+  if (age) {
+    match.age = Number(age);
+  }
+
+  if (idNum) {
+    match.idNum = Number(idNum);
+  }
+
+  if (gender) {
+    match.gender = gender;
+  }
+
+  const students = await Student.find(match);
+
+  res.status(200).json({
+    status: "SUCCESS",
     message: "fetch is successfully",
     data: { students },
   });

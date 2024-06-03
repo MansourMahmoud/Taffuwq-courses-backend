@@ -40,7 +40,7 @@ const addOrder = asyncWrapper(async (req, res, next) => {
 
       const totalPrice = Number(total);
       const totalSubscriptionPricesForTeacher = Number(
-        teacher?.totalSubscriptionPrices
+        teacher?.totalSubscriptionPrices || 0
       );
       if (!isStudent) {
         teacher.studentsIds = teacher.studentsIds.concat(studentId);
@@ -75,8 +75,8 @@ const addOrder = asyncWrapper(async (req, res, next) => {
         const newNotificationForStudent = new StudentNotification({
           studentId: student._id,
           content: `لقد اشتركت في دورة المعلم ${teacher.fullName} بمبلغ قدرة ${(
-            +total + 20
-          ).toString()} شيكيل`,
+            totalPrice + 20
+          ).toString()} شيكل`,
         });
 
         await newNotificationForStudent.save();
@@ -149,10 +149,10 @@ const addOrder = asyncWrapper(async (req, res, next) => {
           if (course.course.ad.showDiscount === true) {
             coursePrice = +course.course.ad.discount;
           }
-          totalOfPrice += +coursePrice;
+          totalOfPrice += coursePrice;
 
           teacher.totalSubscriptionPrices = (
-            +teacher.totalSubscriptionPrices + +coursePrice
+            Number(teacher.totalSubscriptionPrices || 0) + coursePrice
           ).toString();
           await teacher.save();
         }

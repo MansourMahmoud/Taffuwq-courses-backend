@@ -12,6 +12,7 @@ const { v4 } = require("uuid");
 
 const getAllAds = asyncWrapper(async (req, res, next) => {
   const options = {
+    sort: { createdAt: -1 },
     select: { __v: false },
     page: parseInt(req.query.page) || 1, // الصفحة الحالية (الافتراضي الصفحة 1)
     limit: parseInt(req.query.limit) || 5, // عدد العناصر في كل صفحة (الافتراضي 5)

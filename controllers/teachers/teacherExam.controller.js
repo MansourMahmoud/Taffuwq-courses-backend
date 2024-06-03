@@ -19,7 +19,7 @@ const getAllExams = asyncWrapper(async (req, res, next) => {
     select: "-__v", // لإخفاء الحقل __v
     page: parseInt(req.query.page) || 1, // الصفحة الحالية (الافتراضي الصفحة 1)
     limit: parseInt(req.query.limit) || 5, // عدد العناصر في كل صفحة (الافتراضي 5)
-    sort: { updatedAt: -1 }, // ترتيب حسب updatedAt تنازليًا
+    sort: { createdAt: -1 }, // ترتيب حسب updatedAt تنازليًا
   };
 
   const exams = await Exam.paginate({ teacherId }, options);

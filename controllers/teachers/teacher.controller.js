@@ -78,7 +78,13 @@ const searchInTeacher = asyncWrapper(async (req, res, next) => {
     {
       $addFields: {
         studentsCount: { $size: "$studentsIds" },
-        totalSubscriptionPrices: { $toDouble: "$totalSubscriptionPrices" }, // لتحويل الإيرادات إلى رقم مزدوج
+        totalSubscriptionPrices: {
+          $cond: {
+            if: { $ne: ["$totalSubscriptionPrices", ""] },
+            then: { $toDouble: "$totalSubscriptionPrices" },
+            else: 0,
+          },
+        },
       },
     },
   ];

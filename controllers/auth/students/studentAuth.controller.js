@@ -29,6 +29,7 @@ const studentRegistration = asyncWrapper(async (req, res, next) => {
     dateOfBirth,
     phone,
     age,
+    idNumOfParent,
   } = req.body;
   const file = req.file;
 
@@ -117,6 +118,7 @@ const studentRegistration = asyncWrapper(async (req, res, next) => {
   const code = randomDigits(6);
 
   const newStudent = new Student({
+    idNumOfParent,
     age,
     email,
     phone,

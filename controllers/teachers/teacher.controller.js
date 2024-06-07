@@ -187,6 +187,7 @@ const setPassword = asyncWrapper(async (req, res, next) => {
 
 const getAllTeachers = asyncWrapper(async (req, res, next) => {
   const options = {
+    sort: { createdAt: -1 },
     select: { __v: false, password: false, token: false },
     page: parseInt(req.query.page) || 1, // الصفحة الحالية (الافتراضي الصفحة 1)
     limit: parseInt(req.query.limit) || 5, // عدد العناصر في كل صفحة (الافتراضي 5)
@@ -202,6 +203,7 @@ const getAllTeachers = asyncWrapper(async (req, res, next) => {
 });
 const getAllTeachersAcceptedOrNot = asyncWrapper(async (req, res, next) => {
   const options = {
+    sort: { createdAt: -1 },
     select: { __v: false, password: false, token: false },
     page: parseInt(req.query.page) || 1, // الصفحة الحالية (الافتراضي الصفحة 1)
     limit: parseInt(req.query.limit) || 5, // عدد العناصر في كل صفحة (الافتراضي 5)

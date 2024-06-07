@@ -44,18 +44,6 @@ const teacherSchema = mongoose.Schema(
         message: (props) => `${props.value} يجب أن يكون مكونًا من 9 أرقام فقط!`,
       },
     },
-    idNumOfParent: {
-      type: Number,
-      trim: true,
-      unique: true, // جعل الحقل فريدًا
-      validate: {
-        validator: function (v) {
-          // تحقق مما إذا كانت القيمة تحتوي على 9 أرقام
-          return /^\d{9}$/.test(v.toString());
-        },
-        message: (props) => `${props.value} يجب أن يكون مكونًا من 9 أرقام فقط!`,
-      },
-    },
     course: {
       type: String,
       required: true,

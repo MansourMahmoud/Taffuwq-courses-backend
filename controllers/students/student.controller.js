@@ -81,10 +81,36 @@ const getAllStudentsWithPaginate = asyncWrapper(async (req, res, next) => {
 const getSingleStudent = asyncWrapper(async (req, res, next) => {
   const { studentId } = req.params;
 
-  const student = await Student.findById(
-    { _id: studentId },
-    { __v: false, password: false, token: false }
-  );
+  const student = await Student.findById(studentId, {
+    __v: false,
+    password: false,
+    token: false,
+  });
+
+  if (!student) {
+    const err = appError.create("student not found", 400, FAIL);
+    return next(err);
+  }
+
+  return res.status(200).json({
+    status: SUCCESS,
+    message: "fetch is successfully",
+    data: { student },
+  });
+});
+const getSingleStudentForExamScoure = asyncWrapper(async (req, res, next) => {
+  const { studentId } = req.params;
+
+  const student = await Student.findById(studentId, {
+    __v: false,
+    password: false,
+    token: false,
+  }).populate({
+    path: "informationsOfExams.examId",
+    populate: {
+      path: "teacherId",
+    },
+  });
 
   if (!student) {
     const err = appError.create("student not found", 400, FAIL);
@@ -177,4 +203,5 @@ module.exports = {
   getAllStudents,
   getAllStudentsWithPaginate,
   searchInStudents,
+  getSingleStudentForExamScoure,
 };

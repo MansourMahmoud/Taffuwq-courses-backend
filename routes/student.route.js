@@ -15,6 +15,7 @@ const {
   getAllStudents,
   getAllStudentsWithPaginate,
   searchInStudents,
+  getSingleStudentForExamScoure,
 } = require("../controllers/students/student.controller");
 const {
   addCourseInCart,
@@ -44,6 +45,7 @@ router.route("/courses/:studentId").get(getAllCoursesToJSON);
 
 router.route("/all-student-with-paginate").get(getAllStudentsWithPaginate);
 router.route("/search").get(searchInStudents);
+router.route("/exams-scoure/:studentId").get(getSingleStudentForExamScoure);
 router.route("/").get(getAllStudents).post(getTeacherStudents);
 router.route("/:studentId").get(getSingleStudent).patch(updateStudent);
 

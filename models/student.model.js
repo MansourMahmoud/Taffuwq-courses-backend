@@ -49,6 +49,10 @@ const studentSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    fullNameOfParent: {
+      type: String,
+      trim: true,
+    },
     idNum: {
       type: Number,
       required: true,

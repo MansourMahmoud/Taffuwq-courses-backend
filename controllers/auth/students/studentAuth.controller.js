@@ -30,6 +30,7 @@ const studentRegistration = asyncWrapper(async (req, res, next) => {
     phone,
     age,
     idNumOfParent,
+    fullNameOfParent,
   } = req.body;
   const file = req.file;
 
@@ -127,6 +128,7 @@ const studentRegistration = asyncWrapper(async (req, res, next) => {
     branch,
     nameOfSchool,
     idNum,
+    fullNameOfParent,
     dateOfBirth,
     avatar: avatar
       ? avatar

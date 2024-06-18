@@ -2,6 +2,7 @@ const asyncWrapper = require("../../middleware/asyncWrapper");
 const Student = require("../../models/student.model");
 const appError = require("../../utils/appError");
 const { SUCCESS, FAIL } = require("../../utils/httpStatusText");
+const bcrypt = require("bcryptjs");
 
 const getAllStudents = asyncWrapper(async (req, res, next) => {
   const students = await Student.find(
@@ -172,13 +173,43 @@ const updateStudent = asyncWrapper(async (req, res, next) => {
   const reqBody = req.body;
 
   let updatedStudent;
-  console.log("reqBody:", reqBody);
 
   if (reqBody.informationsOfExams) {
     updatedStudent = await Student.findOneAndUpdate(
       { _id: studentId },
       { $push: { informationsOfExams: reqBody.informationsOfExams } },
       { upsert: true, new: true }
+    );
+  } else if (reqBody.oldPassword && reqBody.newPassword) {
+    updatedStudent = await Student.findOneAndUpdate(
+      { _id: studentId },
+      {
+        $set: { ...reqBody },
+        $unset: { oldPassword: "", newPassword: "" },
+      },
+      { new: true }
+    );
+
+    const student = await Student.findById(studentId);
+
+    const isMatch = await bcrypt.compare(reqBody.oldPassword, student.password);
+
+    if (!isMatch) {
+      const error = appError.create(
+        "all data has been updated successfully but old password is invalid",
+        400,
+        FAIL
+      );
+      next(error);
+    }
+
+    updatedStudent = await Student.findOneAndUpdate(
+      { _id: studentId },
+      {
+        $set: { ...reqBody, password: reqBody.newPassword },
+        $unset: { oldPassword: "", newPassword: "" },
+      },
+      { new: true }
     );
   } else {
     updatedStudent = await Student.findOneAndUpdate(

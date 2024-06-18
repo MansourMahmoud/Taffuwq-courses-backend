@@ -193,7 +193,7 @@ const updateStudent = asyncWrapper(async (req, res, next) => {
     const student = await Student.findById(studentId);
 
     const isMatch = await bcrypt.compare(reqBody.oldPassword, student.password);
-
+    console.log(isMatch);
     if (!isMatch) {
       const error = appError.create(
         "all data has been updated successfully but old password is invalid",
@@ -203,10 +203,12 @@ const updateStudent = asyncWrapper(async (req, res, next) => {
       next(error);
     }
 
+    const hashedPassword = await bcrypt.hash(reqBody.newPassword, 8);
+
     updatedStudent = await Student.findOneAndUpdate(
       { _id: studentId },
       {
-        $set: { ...reqBody, password: reqBody.newPassword },
+        $set: { ...reqBody, password: hashedPassword },
         $unset: { oldPassword: "", newPassword: "" },
       },
       { new: true }
@@ -218,8 +220,6 @@ const updateStudent = asyncWrapper(async (req, res, next) => {
       { new: true }
     );
   }
-
-  console.log("updatedStudent in student.controller:", updatedStudent);
 
   return res.status(200).json({
     status: "SUCCESS",

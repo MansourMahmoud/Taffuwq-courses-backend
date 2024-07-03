@@ -60,9 +60,9 @@ const resetPass = asyncWrapper(async (req, res, next) => {
     const err = appError.create("teacher not found", 400, FAIL);
     next(err);
   }
-
+  //
   teacher.password = await bcrypt.hash(password, 8);
-
+  //
   await teacher.save();
 
   const newNotificationForTeacher = new TeacherNotification({

@@ -34,6 +34,7 @@ const studentsRouter = require("./routes/student.route");
 const paymentRouter = require("./routes/payment.route");
 const ordersRouter = require("./routes/order.route");
 const calendarRouter = require("./routes/calendar.route");
+const resetPasswordRouter = require("./routes/resetPassword.route");
 
 // use Router
 app.use("/api/v1/teachers/lectures", teachersLecturesRouter);
@@ -53,6 +54,7 @@ app.use("/api/v1/payment", paymentRouter);
 //
 app.use("/api/v1/orders", ordersRouter);
 app.use("/api/v1/calendar", calendarRouter);
+app.use("/api/v1/reset-password", resetPasswordRouter);
 
 // global middleware for not found router
 app.all("*", (req, res) => {
